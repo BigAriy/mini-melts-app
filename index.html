@@ -61,12 +61,36 @@
             let val = parseInt(input.value) + delta;
             if (val < 0) val = 0;
             input.value = val;
+            updateManual(id, val);
+        }
+
+        function updateManual(id, value) {
+            let val = parseInt(value);
+            if (isNaN(val) || val < 0) val = 0;
             
             if (val > 0) order[id] = val;
             else delete order[id];
 
             document.getElementById('send-btn').style.display = 
                 Object.keys(order).length > 0 ? 'block' : 'none';
+        }
+
+        function renderGoods(items) {
+            const container = document.getElementById('goods-list');
+            container.innerHTML = '';
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `
+                    <span>${item.Title} (${item.Unit})</span>
+                    <div class="controls">
+                        <button onclick="change(${item.ID}, -1)">-</button>
+                        <input type="number" id="qty-${item.ID}" value="0" oninput="updateManual(${item.ID}, this.value)">
+                        <button onclick="change(${item.ID}, 1)">+</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
         }
 
         function sendOrder() {
