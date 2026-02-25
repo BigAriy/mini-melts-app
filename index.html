@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Goods</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; background-color: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); margin: 0; padding: 15px; }
+        .item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #ccc; }
+        .controls { display: flex; align-items: center; gap: 10px; }
+        button { padding: 5px 10px; border: none; border-radius: 4px; background: #3390ec; color: white; cursor: pointer; }
+        input { width: 40px; text-align: center; border: 1px solid #ccc; background: none; color: inherit; }
+        .main-button { position: fixed; bottom: 20px; left: 20px; right: 20px; padding: 15px; background: #31b545; color: white; text-align: center; border-radius: 10px; font-weight: bold; display: none; }
+    </style>
+</head>
+<body>
+    <div id="goods-list">Загрузка товаров...</div>
+    <div id="send-btn" class="main-button" onclick="sendOrder()">ПОДТВЕРДИТЬ ЗАКАЗ</div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // В реальном проекте здесь будет fetch к вашему API
+        // Для теста покажем как бот передает товары
+        let goods = []; 
+
+        // Имитируем получение данных. 
+        // В идеале бот передает список товаров через URL или отдельный запрос
+        async function loadGoods() {
+            // Здесь мы могли бы сделать fetch('https://your-api.com/goods')
+            // Но для начала попробуем передать их через "грязный" хак или просто зашьем для теста
+            // В следующем шаге я покажу как сделать это динамически
+            const demoGoods = [
+                {id: 1, title: "Товар 1", unit: "шт"},
+                {id: 2, title: "Товар 2", unit: "кг"},
+                {id: 3, title: "Товар 3", unit: "уп"}
+            ];
+            renderGoods(demoGoods);
+        }
+
+        let order = {};
+
+        function renderGoods(items) {
+            const container = document.getElementById('goods-list');
+            container.innerHTML = '';
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item';
+                div.innerHTML = `
+                    <span>${item.title} (${item.unit})</span>
+                    <div class="controls">
+                        <button onclick="change(${item.id}, -1)">-</button>
+                        <input type="number" id="qty-${item.id}" value="0" readonly>
+                        <button onclick="change(${item.id}, 1)">+</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function change(id, delta) {
+            let input = document.getElementById(`qty-${id}`);
+            let val = parseInt(input.value) + delta;
+            if (val < 0) val = 0;
+            input.value = val;
+            
+            if (val > 0) order[id] = val;
+            else delete order[id];
+
+            document.getElementById('send-btn').style.display = 
+                Object.keys(order).length > 0 ? 'block' : 'none';
+        }
+
+        function sendOrder() {
+            tg.sendData(JSON.stringify(order));
+            tg.close();
+        }
+
+        loadGoods();
+    </script>
+</body>
+</html>
