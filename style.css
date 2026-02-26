@@ -79,6 +79,18 @@ body {
     border-radius: 4px;
     background: none;
     color: inherit;
+
+}
+
+/* Убираем стандартные стрелки у полей ввода типа number */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
 }
 
 .main-button {
@@ -93,5 +105,6 @@ body {
     border-radius: 12px;
     font-weight: bold;
     display: none;
+    cursor: pointer;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
