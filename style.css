@@ -40,6 +40,43 @@ body {
     opacity: 0.6;
 }
 
+#help-container {
+    display: none;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.help-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+    padding: 5px;
+}
+
+.help-icon-btn:hover {
+    opacity: 1;
+}
+
+#help-text {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s;
+    font-size: var(--font-size-footer);
+    text-align: left;
+    background: rgba(128, 128, 128, 0.1);
+    border-radius: 8px;
+    line-height: 1.4;
+}
+
+#help-text.open {
+    max-height: 500px; /* достаточно для текста */
+    padding: 15px;
+    margin-top: 10px;
+}
+    
 .item {
     display: flex;
     align-items: center;
