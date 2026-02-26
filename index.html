@@ -11,7 +11,11 @@
     <div id="app-header"></div>
     <div id="app-subheader"></div>
     
-    <div id="goods-list">Загрузка товаров...</div>
+    <div id="goods-list">
+        <div class="loader-container">
+            <div class="spinner"></div>
+        </div>
+    </div>
     
     <div id="app-footer"></div>
 
@@ -45,6 +49,7 @@
                 if (data.texts.header) document.getElementById('app-header').innerText = data.texts.header;
                 if (data.texts.subheader) document.getElementById('app-subheader').innerText = data.texts.subheader;
                 if (data.texts.footer) document.getElementById('app-footer').innerText = data.texts.footer;
+                if (data.texts.confirm_btn) document.getElementById('send-btn').innerText = data.texts.confirm_btn;
                 
                 if (data.texts.help) {
                     document.getElementById('help-container').style.display = 'block';
