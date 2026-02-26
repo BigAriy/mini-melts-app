@@ -45,6 +45,11 @@
                 if (data.texts.header) document.getElementById('app-header').innerText = data.texts.header;
                 if (data.texts.subheader) document.getElementById('app-subheader').innerText = data.texts.subheader;
                 if (data.texts.footer) document.getElementById('app-footer').innerText = data.texts.footer;
+                
+                if (data.texts.help) {
+                    document.getElementById('help-container').style.display = 'block';
+                    document.getElementById('help-text').innerText = data.texts.help;
+                }
 
                 renderGoods(data.goods);
             } catch (e) {
@@ -91,6 +96,11 @@
                 Object.keys(order).length > 0 ? 'block' : 'none';
         }
 
+        function toggleHelp() {
+            const helpBlock = document.getElementById('help-text');
+            helpBlock.classList.toggle('open');
+        }
+        
         function sendOrder() {
             tg.sendData(JSON.stringify(order));
             tg.close();
