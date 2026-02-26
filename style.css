@@ -14,6 +14,7 @@ body {
     color: var(--tg-theme-text-color);
     margin: 0 auto;
     max-width: 600px;
+    padding: 0 15px;
     padding-bottom: 80px; /* отступ под кнопку */
 }
 
