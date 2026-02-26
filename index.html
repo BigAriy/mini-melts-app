@@ -4,18 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Goods</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body { font-family: sans-serif; background-color: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); margin: 0; padding: 15px; }
-        .item { display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #ccc; }
-        .controls { display: flex; align-items: center; gap: 10px; }
-        button { padding: 5px 10px; border: none; border-radius: 4px; background: #3390ec; color: white; cursor: pointer; }
-        input { width: 40px; text-align: center; border: 1px solid #ccc; background: none; color: inherit; }
-        .main-button { position: fixed; bottom: 20px; left: 20px; right: 20px; padding: 15px; background: #31b545; color: white; text-align: center; border-radius: 10px; font-weight: bold; display: none; }
-    </style>
 </head>
 <body>
+    <div id="app-header"></div>
+    <div id="app-subheader"></div>
+    
     <div id="goods-list">Загрузка товаров...</div>
+    
+    <div id="app-footer"></div>
+    
     <div id="send-btn" class="main-button" onclick="sendOrder()">ПОДТВЕРДИТЬ ЗАКАЗ</div>
 
     <script>
@@ -29,8 +28,14 @@
         async function loadGoods() {
             try {
                 const response = await fetch('https://melts.sigmaboy.us/api/goods');
-                const goods = await response.json();
-                renderGoods(goods);
+                const data = await response.json();
+                
+                // Отображаем тексты из настроек
+                if (data.texts.header) document.getElementById('app-header').innerText = data.texts.header;
+                if (data.texts.subheader) document.getElementById('app-subheader').innerText = data.texts.subheader;
+                if (data.texts.footer) document.getElementById('app-footer').innerText = data.texts.footer;
+
+                renderGoods(data.goods);
             } catch (e) {
                 document.getElementById('goods-list').innerText = "Ошибка загрузки: " + e;
             }
@@ -48,7 +53,7 @@
                     <span>${item.Title} (${item.Unit})</span>
                     <div class="controls">
                         <button onclick="change(${item.ID}, -1)">-</button>
-                        <input type="number" id="qty-${item.ID}" value="0" readonly>
+                        <input type="number" id="qty-${item.ID}" value="0" oninput="updateManual(${item.ID}, this.value)">
                         <button onclick="change(${item.ID}, 1)">+</button>
                     </div>
                 `;
@@ -73,24 +78,6 @@
 
             document.getElementById('send-btn').style.display = 
                 Object.keys(order).length > 0 ? 'block' : 'none';
-        }
-
-        function renderGoods(items) {
-            const container = document.getElementById('goods-list');
-            container.innerHTML = '';
-            items.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'item';
-                div.innerHTML = `
-                    <span>${item.Title} (${item.Unit})</span>
-                    <div class="controls">
-                        <button onclick="change(${item.ID}, -1)">-</button>
-                        <input type="number" id="qty-${item.ID}" value="0" oninput="updateManual(${item.ID}, this.value)">
-                        <button onclick="change(${item.ID}, 1)">+</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
         }
 
         function sendOrder() {
