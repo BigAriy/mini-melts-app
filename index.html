@@ -42,8 +42,9 @@
 
         async function loadGoods() {
             try {
-                // Получаем ID пользователя из Telegram
-                let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '';
+                // Пытаемся получить ID из URL или из системы Telegram
+                const urlParams = new URLSearchParams(window.location.search);
+                let userId = urlParams.get('tg_id') || (tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '');
                 
                 const response = await fetch(`https://melts.sigmaboy.us/api/goods?tg_id=${userId}`);
                 const data = await response.json();
