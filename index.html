@@ -42,7 +42,10 @@
 
         async function loadGoods() {
             try {
-                const response = await fetch('https://melts.sigmaboy.us/api/goods');
+                // Получаем ID пользователя из Telegram
+                let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '';
+                
+                const response = await fetch(`https://melts.sigmaboy.us/api/goods?tg_id=${userId}`);
                 const data = await response.json();
                 
                 // Отображаем тексты из настроек
@@ -56,7 +59,7 @@
                     document.getElementById('help-text').innerText = data.texts.help;
                 }
 
-                renderGoods(data.goods);
+                renderGoods(data.goods, data.saved_selection || {});
             } catch (e) {
                 document.getElementById('goods-list').innerText = "Error al cargar: " + e;
             }
@@ -64,22 +67,32 @@
 
         let order = {};
 
-        function renderGoods(items) {
+        function renderGoods(items, saved) {
             const container = document.getElementById('goods-list');
             container.innerHTML = '';
+            
             items.forEach(item => {
+                // Проверяем, было ли сохранено количество для этого товара (по названию)
+                let initialQty = saved[item.Title] || 0;
+                if (initialQty > 0) order[item.ID] = initialQty;
+
                 const div = document.createElement('div');
                 div.className = 'item';
                 div.innerHTML = `
                     <span>${item.Title} (${item.Unit})</span>
                     <div class="controls">
                         <button onclick="change(${item.ID}, -1)">-</button>
-                        <input type="number" id="qty-${item.ID}" value="0" oninput="updateManual(${item.ID}, this.value)">
+                        <input type="number" id="qty-${item.ID}" value="${initialQty}" oninput="updateManual(${item.ID}, this.value)">
                         <button onclick="change(${item.ID}, 1)">+</button>
                     </div>
                 `;
                 container.appendChild(div);
             });
+
+            // Если есть предзаполненные товары — сразу показываем кнопку подтверждения
+            if (Object.keys(order).length > 0) {
+                document.getElementById('send-btn').style.display = 'block';
+            }
         }
 
         function change(id, delta) {
