@@ -169,3 +169,9 @@ input[type=number] {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+.main-button.offline {
+    background: #999 !important;
+    cursor: not-allowed;
+    pointer-events: none;
+}
