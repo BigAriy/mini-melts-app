@@ -66,7 +66,12 @@
 
                 renderGoods(data.goods, data.saved_selection || {});
             } catch (e) {
-                document.getElementById('goods-list').innerText = "Error al cargar: " + e;
+                document.getElementById('goods-list').innerHTML = `
+                    <div class="error-container">
+                        <p>No se pudo cargar la lista de productos.</p>
+                        <button class="retry-btn" onclick="location.reload()">REINTENTAR</button>
+                    </div>
+                `;
             }
         }
 
