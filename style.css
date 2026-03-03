@@ -34,11 +34,11 @@ body {
 }
 
 #app-footer {
-    font-size: var(--font-size-footer);
+    font-size: var(--font-size-subheader);
     text-align: center;
     margin-top: 30px;
     padding: 10px;
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
 #help-container {
@@ -65,7 +65,7 @@ body {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease-out, padding 0.3s;
-    font-size: var(--font-size-footer);
+    font-size: var(--font-size-subheader);
     text-align: left;
     background: rgba(128, 128, 128, 0.1);
     border-radius: 8px;
