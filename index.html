@@ -50,7 +50,7 @@
                 let userId = urlParams.get('tg_id') || (tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '');
                 
                 // Добавляем v=${Date.now()}, чтобы запрос никогда не кэшировался браузером
-                const response = await fetch(`/api/goods?tg_id=${userId}&v=${Date.now()}`);
+                const response = await fetch(`https://melts.sigmaboy.us/api/goods?tg_id=${userId}&v=${Date.now()}`);
                 const data = await response.json();
                 
                 // Отображаем тексты из настроек
@@ -160,7 +160,7 @@
             try {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 3000); // Таймаут 3 сек
-                const ping = await fetch('/health-check', { signal: controller.signal });
+                const ping = await fetch('https://melts.sigmaboy.us/health-check', { signal: controller.signal });
                 clearTimeout(timeoutId);
                 
                 if (ping.ok) {
