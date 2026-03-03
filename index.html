@@ -84,7 +84,7 @@
                 const div = document.createElement('div');
                 div.className = 'item';
                 div.innerHTML = `
-                    <span>${item.Title} (${item.Unit})</span>
+                    <span>${item.Title}${item.Unit ? ` (${item.Unit})` : ''}</span>
                     <div class="controls">
                         <button onclick="change(${item.ID}, -1)">-</button>
                         <input type="number" id="qty-${item.ID}" value="${initialQty}" oninput="updateManual(${item.ID}, this.value)">
