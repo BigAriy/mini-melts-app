@@ -11,7 +11,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div style="font-size: 8px; opacity: 0.3; position: absolute; top: 2px; right: 2px;">v1.6-secure</div>
+    <div style="font-size: 8px; opacity: 0.3; position: absolute; top: 2px; right: 2px;">v1.7-secure</div>
     <div id="app-header"></div>
     <div id="app-subheader"></div>
     
@@ -44,30 +44,23 @@
         // Для теста покажем как бот передает товары
         let goods = []; 
 
-        async function loadGoods() {
+
+       async function loadGoods() {
+            // Создаем контроллер для прерывания запроса через 5 секунд
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000);
 
             try {
-                // Ждем готовности
-                tg.ready();
-                const initData = tg.initData;
+                // Пытаемся получить ID из URL или из системы Telegram
+                const urlParams = new URLSearchParams(window.location.search);
+                let userId = urlParams.get('tg_id') || (tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '');
                 
-                console.log("InitData length:", initData ? initData.length : 0);
-
-                if (!initData || initData === "") {
-                    document.getElementById('goods-list').innerHTML = `
-                        <div class="error-container">
-                            <p>⚠️ Error de seguridad (initData empty).<br>Use el botón del menú del bot.</p>
-                        </div>
-                    `;
-                    return;
-                }
-                // Используем абсолютный путь для надежности, с относительным какие-то проблемы
-                const response = await fetch(`https://melts.sigmaboy.us/api/goods?init_data=${encodeURIComponent(initData)}&v=${Date.now()}`, { 
+                // Добавляем v=${Date.now()}, чтобы запрос никогда не кэшировался браузером
+                const response = await fetch(`https://melts.sigmaboy.us/api/goods?tg_id=${userId}&v=${Date.now()}`, { 
                     signal: controller.signal 
                 });
-
+        
+        
 
                 
                 clearTimeout(timeoutId); // Отменяем тайм-аут, если запрос успел
