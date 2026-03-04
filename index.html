@@ -43,19 +43,23 @@
         // Для теста покажем как бот передает товары
         let goods = []; 
 
+
         async function loadGoods() {
-            // Создаем контроллер для прерывания запроса через 5 секунд
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000);
 
             try {
-                // Берем защищенную строку инициализации от Telegram
                 const initData = tg.initData;
                 
-                // Передаем её вместо открытого tg_id
+                if (!initData) {
+                    throw new Error("Telegram initData is missing. Open the app via the bot button.");
+                }
+                
+                // Используем относительный путь для надежности
                 const response = await fetch(`https://melts.sigmaboy.us/api/goods?init_data=${encodeURIComponent(initData)}&v=${Date.now()}`, { 
                     signal: controller.signal 
                 });
+
                 
                 clearTimeout(timeoutId); // Отменяем тайм-аут, если запрос успел
                 const data = await response.json();
