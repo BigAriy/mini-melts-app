@@ -27,8 +27,9 @@ body {
 }
 
 #app-logo {
-    max-height: var(--font-size-header);
+    height: var(--font-size-header);
     max-width: 40px;
+    object-fit: contain;
     display: none;
 }
 
