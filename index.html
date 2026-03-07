@@ -11,8 +11,11 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div style="font-size: 8px; opacity: 0.3; position: absolute; top: 2px; right: 2px;">v1.7-secure</div>
-    <div id="app-header"></div>
+    <body>
+    <div class="header-wrapper">
+        <img id="app-logo" src="" alt="logo">
+        <div id="app-header"></div>
+    </div>
     <div id="app-subheader"></div>
     
     <div id="goods-list">
@@ -68,6 +71,11 @@
                 
                 // Отображаем тексты из настроек
                 if (data.texts.header) document.getElementById('app-header').innerText = data.texts.header;
+                if (data.texts.logo) {
+                    const logoEl = document.getElementById('app-logo');
+                    logoEl.src = data.texts.logo;
+                    logoEl.style.display = 'block';
+                }
                 if (data.texts.subheader) document.getElementById('app-subheader').innerText = data.texts.subheader;
                 if (data.texts.footer) document.getElementById('app-footer').innerText = data.texts.footer;
                 if (data.texts.confirm_btn) document.getElementById('send-btn').innerText = data.texts.confirm_btn;
