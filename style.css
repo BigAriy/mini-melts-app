@@ -18,12 +18,23 @@ body {
     
 }
 
+.header-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    gap: 12px;
+}
+
+#app-logo {
+    height: var(--font-size-header);
+    display: none;
+}
+
 #app-header {
     font-size: var(--font-size-header);
     color: var(--header-color);
     font-weight: bold;
-    text-align: center;
-    margin-bottom: 5px;
 }
 
 #app-subheader {
