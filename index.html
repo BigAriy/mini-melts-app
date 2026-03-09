@@ -71,7 +71,7 @@
                 clearTimeout(timeoutId);
                 serverData = await response.json();
                 
-                // Настройка текстов помощи и логотипа (общие для всех режимов)
+                // Отображаем общие тексты
                 if (serverData.texts.logo) {
                     const logoEl = document.getElementById('app-logo');
                     logoEl.src = serverData.texts.logo;
@@ -83,7 +83,7 @@
                 }
                 if (serverData.texts.footer) document.getElementById('app-footer').innerText = serverData.texts.footer;
 
-                // Логика блокировки изменений
+                // Логика блокировки
                 if (serverData.is_fixed) {
                     const notice = document.getElementById('fixed-notice');
                     notice.innerText = serverData.texts.fixed_msg || 'El pedido está bloqueado.';
@@ -94,7 +94,7 @@
                     return;
                 }
 
-                // Проверка необходимости выбора
+                // Проверка необходимости выбора режима
                 if (serverData.show_choice) {
                     document.getElementById('choice-title').innerText = serverData.texts.choice_title;
                     document.getElementById('choice-new-btn').innerText = serverData.texts.choice_new;
@@ -123,11 +123,9 @@
             // Устанавливаем заголовки и кнопку согласно выбору
             document.getElementById('app-header').innerText = isEdit ? serverData.texts.edit_header : serverData.texts.header;
             document.getElementById('send-btn').innerText = isEdit ? serverData.texts.edit_confirm_btn : serverData.texts.confirm_btn;
+            document.getElementById('app-subheader').innerText = isEdit ? serverData.texts.edit_subheader : serverData.texts.subheader;
             
-            // Очищаем текущий объект заказа перед отрисовкой
             order = {};
-            
-            // Отрисовываем товары (передаем сохраненный выбор только если выбрали 'update')
             renderGoods(serverData.goods, isEdit ? (serverData.saved_selection || {}) : {});
         }
 
@@ -138,7 +136,6 @@
             container.innerHTML = '';
             
             items.forEach(item => {
-                // Проверяем, было ли сохранено количество для этого товара (по названию)
                 let initialQty = saved[item.Title] || 0;
                 if (initialQty > 0) order[item.ID] = initialQty;
 
@@ -155,10 +152,7 @@
                 container.appendChild(div);
             });
 
-            // Если есть предзаполненные товары — сразу показываем кнопку подтверждения
-            if (Object.keys(order).length > 0) {
-                document.getElementById('send-btn').style.display = 'block';
-            }
+            document.getElementById('send-btn').style.display = (Object.keys(order).length > 0) ? 'block' : 'none';
         }
 
         function change(id, delta) {
@@ -225,7 +219,10 @@
                 clearTimeout(timeoutId);
                 
                 if (ping.ok) {
-                    tg.sendData(JSON.stringify(order));
+                    tg.sendData(JSON.stringify({
+                        items: order,
+                        action: currentAction
+                    }));
                     tg.close();
                 } else {
                     throw new Error();
