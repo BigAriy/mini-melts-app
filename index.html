@@ -37,14 +37,6 @@
         <div id="help-text"></div>
     </div>
 
-    <!-- Модальное окно выбора -->
-    <div id="choice-overlay">
-        <div id="choice-modal">
-            <h3 id="choice-title"></h3>
-            <button class="choice-btn btn-new" id="choice-new-btn" onclick="selectAction('new')"></button>
-            <button class="choice-btn btn-edit" id="choice-edit-btn" onclick="selectAction('update')"></button>
-        </div>
-    </div>
     
     <div id="send-btn" class="main-button" onclick="sendOrder()">CONFIRMAR PEDIDO</div>
 
@@ -53,7 +45,8 @@
         tg.expand();
 
         let serverData = null;
-        let currentAction = 'new';
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentAction = urlParams.get('mode') || 'new'; 
         let order = {};
 
         async function loadGoods() {
@@ -84,7 +77,7 @@
                 }
                 if (serverData.texts.footer) document.getElementById('app-footer').innerText = serverData.texts.footer;
 
-                // Логика блокировки/выбора режима
+                // Логика блокировки или отображения формы
                 if (serverData.is_fixed) {
                     const notice = document.getElementById('fixed-notice');
                     notice.innerText = serverData.texts.fixed_msg || 'El pedido está bloqueado.';
@@ -92,13 +85,13 @@
                     document.getElementById('goods-list').style.display = 'none';
                     document.getElementById('send-btn').style.display = 'none';
                     document.getElementById('app-subheader').style.display = 'none';
-                } else if (serverData.show_choice) {
-                    document.getElementById('choice-title').innerText = serverData.texts.choice_title;
-                    document.getElementById('choice-new-btn').innerText = serverData.texts.choice_new;
-                    document.getElementById('choice-edit-btn').innerText = serverData.texts.choice_edit;
-                    document.getElementById('choice-overlay').style.display = 'flex';
                 } else {
-                    selectAction('new');
+                    // Устанавливаем заголовки и кнопку напрямую из ответа сервера
+                    document.getElementById('app-header').innerText = serverData.texts.header;
+                    document.getElementById('send-btn').innerText = serverData.texts.confirm_btn;
+                    document.getElementById('app-subheader').innerText = serverData.texts.subheader;
+
+                    renderGoods(serverData.goods, serverData.saved_selection || {});
                 }
 
               
@@ -113,19 +106,7 @@
             }
         }
 
-        function selectAction(choice) {
-            currentAction = choice;
-            document.getElementById('choice-overlay').style.display = 'none';
-            const isEdit = (choice === 'update');
-            
-            document.getElementById('app-header').innerText = isEdit ? serverData.texts.edit_header : serverData.texts.header;
-            document.getElementById('send-btn').innerText = isEdit ? serverData.texts.edit_confirm_btn : serverData.texts.confirm_btn;
-            document.getElementById('app-subheader').innerText = isEdit ? serverData.texts.edit_subheader : serverData.texts.subheader;
-            
-            order = {};
-            renderGoods(serverData.goods, isEdit ? (serverData.saved_selection || {}) : {});
-        }
-
+ 
         function renderGoods(items, saved) {
             const container = document.getElementById('goods-list');
             container.innerHTML = '';
