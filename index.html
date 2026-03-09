@@ -129,8 +129,6 @@
             renderGoods(serverData.goods, isEdit ? (serverData.saved_selection || {}) : {});
         }
 
-        let order = {};
-
         function renderGoods(items, saved) {
             const container = document.getElementById('goods-list');
             container.innerHTML = '';
