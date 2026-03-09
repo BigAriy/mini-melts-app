@@ -147,7 +147,8 @@
                 container.appendChild(div);
             });
 
-            document.getElementById('send-btn').style.display = (Object.keys(order).length > 0) ? 'block' : 'none';
+            const hasItems = Object.keys(order).length > 0;
+            document.getElementById('send-btn').style.display = (hasItems || currentAction === 'update') ? 'block' : 'none';
         }
 
         function change(id, delta) {
@@ -165,8 +166,9 @@
             if (val > 0) order[id] = val;
             else delete order[id];
 
-            document.getElementById('send-btn').style.display = 
-                Object.keys(order).length > 0 ? 'block' : 'none';
+            // Показываем кнопку если есть товары ИЛИ если мы в режиме редактирования (для возможности обнуления)
+            const hasItems = Object.keys(order).length > 0;
+            document.getElementById('send-btn').style.display = (hasItems || currentAction === 'update') ? 'block' : 'none';
         }
 
         function toggleHelp() {
