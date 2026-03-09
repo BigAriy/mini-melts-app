@@ -17,6 +17,7 @@
         <div id="app-header"></div>
     </div>
     <div id="app-subheader"></div>
+    <div id="fixed-notice"></div>
     
     <div id="goods-list">
         <div class="loader-container">
@@ -85,7 +86,18 @@
                     document.getElementById('help-text').innerText = data.texts.help;
                 }
 
-                renderGoods(data.goods, data.saved_selection || {});
+                // Логика блокировки изменений (если Fix == 1 в таблице)
+                if (data.is_fixed) {
+                    const notice = document.getElementById('fixed-notice');
+                    notice.innerText = data.texts.fixed_msg || 'El pedido está bloqueado.';
+                    notice.style.display = 'block';
+                    
+                    document.getElementById('goods-list').style.display = 'none';
+                    document.getElementById('send-btn').style.display = 'none';
+                    document.getElementById('app-subheader').style.display = 'none';
+                } else {
+                    renderGoods(data.goods, data.saved_selection || {});
+                }
             } catch (e) {
                 document.getElementById('goods-list').innerHTML = `
                     <div class="error-container">
