@@ -37,6 +37,15 @@
         </button>
         <div id="help-text"></div>
     </div>
+
+    <!-- Модальное окно выбора -->
+    <div id="choice-overlay">
+        <div id="choice-modal">
+            <h3 id="choice-title"></h3>
+            <button class="choice-btn btn-new" id="choice-new-btn" onclick="selectAction('new')"></button>
+            <button class="choice-btn btn-edit" id="choice-edit-btn" onclick="selectAction('update')"></button>
+        </div>
+    </div>
     
     <div id="send-btn" class="main-button" onclick="sendOrder()">CONFIRMAR PEDIDO</div>
 
@@ -44,60 +53,58 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // В реальном проекте здесь будет fetch к вашему API
-        // Для теста покажем как бот передает товары
-        let goods = []; 
+        let serverData = null;
+        let currentAction = 'new';
+        let order = {};
 
-
-       async function loadGoods() {
-            // Создаем контроллер для прерывания запроса через 5 секунд
+        async function loadGoods() {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000);
 
             try {
-                // Пытаемся получить ID из URL или из системы Telegram
                 const urlParams = new URLSearchParams(window.location.search);
                 let userId = urlParams.get('tg_id') || (tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '');
                 
-                // Добавляем v=${Date.now()}, чтобы запрос никогда не кэшировался браузером
                 const response = await fetch(`https://melts.sigmaboy.us/api/goods?tg_id=${userId}&v=${Date.now()}`, { 
                     signal: controller.signal 
                 });
-        
-        
-
                 
-                clearTimeout(timeoutId); // Отменяем тайм-аут, если запрос успел
-                const data = await response.json();
+                clearTimeout(timeoutId);
+                serverData = await response.json();
                 
-                // Отображаем тексты из настроек
-                if (data.texts.header) document.getElementById('app-header').innerText = data.texts.header;
-                if (data.texts.logo) {
+                // Настройка текстов помощи и логотипа (общие для всех режимов)
+                if (serverData.texts.logo) {
                     const logoEl = document.getElementById('app-logo');
-                    logoEl.src = data.texts.logo;
+                    logoEl.src = serverData.texts.logo;
                     logoEl.style.display = 'block';
                 }
-                if (data.texts.subheader) document.getElementById('app-subheader').innerText = data.texts.subheader;
-                if (data.texts.footer) document.getElementById('app-footer').innerText = data.texts.footer;
-                if (data.texts.confirm_btn) document.getElementById('send-btn').innerText = data.texts.confirm_btn;
-                
-                if (data.texts.help) {
+                if (serverData.texts.help) {
                     document.getElementById('help-container').style.display = 'block';
-                    document.getElementById('help-text').innerText = data.texts.help;
+                    document.getElementById('help-text').innerText = serverData.texts.help;
                 }
+                if (serverData.texts.footer) document.getElementById('app-footer').innerText = serverData.texts.footer;
 
-                // Логика блокировки изменений (если Fix == 1 в таблице)
-                if (data.is_fixed) {
+                // Логика блокировки изменений
+                if (serverData.is_fixed) {
                     const notice = document.getElementById('fixed-notice');
-                    notice.innerText = data.texts.fixed_msg || 'El pedido está bloqueado.';
+                    notice.innerText = serverData.texts.fixed_msg || 'El pedido está bloqueado.';
                     notice.style.display = 'block';
-                    
                     document.getElementById('goods-list').style.display = 'none';
                     document.getElementById('send-btn').style.display = 'none';
                     document.getElementById('app-subheader').style.display = 'none';
-                } else {
-                    renderGoods(data.goods, data.saved_selection || {});
+                    return;
                 }
+
+                // Проверка необходимости выбора
+                if (serverData.show_choice) {
+                    document.getElementById('choice-title').innerText = serverData.texts.choice_title;
+                    document.getElementById('choice-new-btn').innerText = serverData.texts.choice_new;
+                    document.getElementById('choice-edit-btn').innerText = serverData.texts.choice_edit;
+                    document.getElementById('choice-overlay').style.display = 'flex';
+                } else {
+                    selectAction('new');
+                }
+
             } catch (e) {
                 document.getElementById('goods-list').innerHTML = `
                     <div class="error-container">
@@ -106,6 +113,23 @@
                     </div>
                 `;
             }
+        }
+
+        function selectAction(choice) {
+            currentAction = choice;
+            document.getElementById('choice-overlay').style.display = 'none';
+            
+            const isEdit = (choice === 'update');
+            
+            // Устанавливаем заголовки и кнопку согласно выбору
+            document.getElementById('app-header').innerText = isEdit ? serverData.texts.edit_header : serverData.texts.header;
+            document.getElementById('send-btn').innerText = isEdit ? serverData.texts.edit_confirm_btn : serverData.texts.confirm_btn;
+            
+            // Очищаем текущий объект заказа перед отрисовкой
+            order = {};
+            
+            // Отрисовываем товары (передаем сохраненный выбор только если выбрали 'update')
+            renderGoods(serverData.goods, isEdit ? (serverData.saved_selection || {}) : {});
         }
 
         let order = {};
