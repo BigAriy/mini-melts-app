@@ -70,6 +70,7 @@
                 
                 clearTimeout(timeoutId);
                 serverData = await response.json();
+				const data = serverData;
                 
                 // Отображаем общие тексты
                 if (serverData.texts.logo) {
@@ -83,7 +84,7 @@
                 }
                 if (serverData.texts.footer) document.getElementById('app-footer').innerText = serverData.texts.footer;
 
-                // Логика блокировки
+                // Логика блокировки/выбора режима
                 if (serverData.is_fixed) {
                     const notice = document.getElementById('fixed-notice');
                     notice.innerText = serverData.texts.fixed_msg || 'El pedido está bloqueado.';
@@ -91,11 +92,7 @@
                     document.getElementById('goods-list').style.display = 'none';
                     document.getElementById('send-btn').style.display = 'none';
                     document.getElementById('app-subheader').style.display = 'none';
-                    return;
-                }
-
-                // Проверка необходимости выбора режима
-                if (serverData.show_choice) {
+                } else if (serverData.show_choice) {
                     document.getElementById('choice-title').innerText = serverData.texts.choice_title;
                     document.getElementById('choice-new-btn').innerText = serverData.texts.choice_new;
                     document.getElementById('choice-edit-btn').innerText = serverData.texts.choice_edit;
@@ -103,6 +100,8 @@
                 } else {
                     selectAction('new');
                 }
+
+              
 
             } catch (e) {
                 document.getElementById('goods-list').innerHTML = `
@@ -117,10 +116,8 @@
         function selectAction(choice) {
             currentAction = choice;
             document.getElementById('choice-overlay').style.display = 'none';
-            
             const isEdit = (choice === 'update');
             
-            // Устанавливаем заголовки и кнопку согласно выбору
             document.getElementById('app-header').innerText = isEdit ? serverData.texts.edit_header : serverData.texts.header;
             document.getElementById('send-btn').innerText = isEdit ? serverData.texts.edit_confirm_btn : serverData.texts.confirm_btn;
             document.getElementById('app-subheader').innerText = isEdit ? serverData.texts.edit_subheader : serverData.texts.subheader;
