@@ -135,20 +135,34 @@
 
         function change(id, delta) {
             let input = document.getElementById(`qty-${id}`);
-            let val = parseInt(input.value) + delta;
+            let val = (parseInt(input.value) || 0) + delta;
+            
+            // Ограничения
             if (val < 0) val = 0;
+            if (val > 99) val = 99; 
+            
             input.value = val;
             updateManual(id, val);
         }
 
         function updateManual(id, value) {
-            let val = parseInt(value);
-            if (isNaN(val) || val < 0) val = 0;
+            let input = document.getElementById(`qty-${id}`);
+            let cleanValue = value.toString().replace(/[^0-9]/g, ''); // Удаляем всё, кроме цифр
             
+            // Проверка регулярным выражением из настроек
+            let regex = new RegExp(serverData.qty_regex || "^[0-9]{1,2}$");
+            
+            if (cleanValue !== "" && !regex.test(cleanValue)) {
+                // Если ввели например 100, а разрешено 2 знака - обрезаем до 99
+                cleanValue = 99;
+            }
+
+            let val = parseInt(cleanValue) || 0;
+            input.value = val; // Визуально обновляем поле
+
             if (val > 0) order[id] = val;
             else delete order[id];
 
-            // Показываем кнопку если есть товары ИЛИ если мы в режиме редактирования (для возможности обнуления)
             const hasItems = Object.keys(order).length > 0;
             document.getElementById('send-btn').style.display = (hasItems || currentAction === 'update') ? 'block' : 'none';
         }
