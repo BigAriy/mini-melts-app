@@ -74,7 +74,7 @@
                 }
                 if (serverData.texts.help) {
                     document.getElementById('help-container').style.display = 'block';
-                    document.getElementById('help-text').innerText = serverData.texts.help;
+                    document.getElementById('help-text').innerHTML = serverData.texts.help;
                 }
                 if (serverData.texts.footer) document.getElementById('app-footer').innerText = serverData.texts.footer;
 
