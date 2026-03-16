@@ -73,8 +73,18 @@
                     logoEl.style.display = 'block';
                 }
                 if (serverData.texts.help) {
+                    const helpEl = document.getElementById('help-text');
                     document.getElementById('help-container').style.display = 'block';
-                    document.getElementById('help-text').innerHTML = serverData.texts.help;
+                    helpEl.innerHTML = serverData.texts.help;
+                    
+                    // Перехват кликов по ссылкам для открытия во внешнем браузере устройства
+                    helpEl.addEventListener('click', (e) => {
+                        const link = e.target.closest('a');
+                        if (link && link.href) {
+                            e.preventDefault();
+                            tg.openLink(link.href);
+                        }
+                    });
                 }
                 if (serverData.texts.footer) document.getElementById('app-footer').innerText = serverData.texts.footer;
 
