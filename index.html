@@ -23,6 +23,8 @@
             <div class="spinner"></div>
         </div>
     </div>
+
+    <div id="totals-block" style="display: none;"></div>
     
     <div id="app-footer"></div>
 
@@ -48,6 +50,37 @@
         const urlParams = new URLSearchParams(window.location.search);
         let currentAction = urlParams.get('mode') || 'new'; 
         let order = {};
+
+		function updateTotals() {
+            const container = document.getElementById('totals-block');
+            if (!serverData || !serverData.goods) return;
+
+            // Собираем все уникальные типы из списка товаров
+            const types = [...new Set(serverData.goods.map(g => g.Type).filter(t => t))];
+            
+            if (types.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            const sums = {};
+            types.forEach(t => sums[t] = 0);
+
+            // Считаем суммы на основе текущего объекта order
+            for (const [id, qty] of Object.entries(order)) {
+                const item = serverData.goods.find(g => g.ID == id);
+                if (item && item.Type) {
+                    sums[item.Type] += qty;
+                }
+            }
+
+            // Отрисовываем строки
+            container.innerHTML = types.map(t => `
+                <div class="total-line">Total: ${sums[t]} ${t}</div>
+            `).join('');
+            
+            container.style.display = 'block';
+        }
 
         async function loadGoods() {
             const controller = new AbortController();
