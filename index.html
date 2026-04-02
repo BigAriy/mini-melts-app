@@ -136,6 +136,7 @@
                     document.getElementById('app-subheader').innerText = serverData.texts.subheader;
 
                     renderGoods(serverData.goods, serverData.saved_selection || {});
+					updateTotals();
                 }
 
               
@@ -155,6 +156,7 @@
             const container = document.getElementById('goods-list');
             container.innerHTML = '';
             
+            order = {}; // Очищаем перед рендером
             items.forEach(item => {
                 let initialQty = saved[item.Title] || 0;
                 if (initialQty > 0) order[item.ID] = initialQty;
@@ -205,6 +207,8 @@
 
             if (val > 0) order[id] = val;
             else delete order[id];
+
+			updateTotals();
 
             const hasItems = Object.keys(order).length > 0;
             document.getElementById('send-btn').style.display = (hasItems || currentAction === 'update') ? 'block' : 'none';
