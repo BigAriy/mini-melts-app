@@ -66,9 +66,24 @@
                 clearTimeout(timeoutId);
                 serverData = await response.json();
 				// Применяем цвет фона из настроек
-                if (serverData.bg_color) {
+				
+				
+				if (serverData.bg_color) {
                     document.body.style.backgroundColor = serverData.bg_color;
                 }
+                
+                // Применяем цвет главной кнопки
+                if (serverData.confirm_btn_color) {
+                    document.getElementById('send-btn').style.backgroundColor = serverData.confirm_btn_color;
+                }
+
+                // Отображаем общие тексты
+                if (serverData.texts.logo) {
+                    const logoEl = document.getElementById('app-logo');
+                    logoEl.src = serverData.texts.logo;
+                    logoEl.style.display = 'block';
+                }
+				
 				const data = serverData;
                 
                 // Отображаем общие тексты
@@ -136,9 +151,9 @@
                 div.innerHTML = `
                     <span>${item.Title}${item.Unit ? ` (${item.Unit})` : ''}</span>
                     <div class="controls">
-                        <button onclick="change(${item.ID}, -1)">-</button>
+                        <button style="background-color: ${serverData.btn_color || ''}" onclick="change(${item.ID}, -1)">-</button>
                         <input type="number" id="qty-${item.ID}" value="${initialQty}" oninput="updateManual(${item.ID}, this.value)">
-                        <button onclick="change(${item.ID}, 1)">+</button>
+                        <button style="background-color: ${serverData.btn_color || ''}" onclick="change(${item.ID}, 1)">+</button>
                     </div>
                 `;
                 container.appendChild(div);
