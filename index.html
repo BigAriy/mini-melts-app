@@ -113,7 +113,9 @@
                 if (serverData.manager_name) {
                     const mNotice = document.getElementById('manager-notice');
                     const opName = currentType === 'stock' ? 'inventario' : 'pedido';
-                    mNotice.innerHTML = `✍️ <b>Modo Representante</b><br>${serverData.manager_name} tramitando ${opName} para <b>${serverData.texts.header.split(' ').pop()}</b>`;
+                    mNotice.innerHTML = `✍️ <b>Modo Representante</b><br>` +
+                                        `<b>${serverData.manager_name}</b> tramitando ${opName}<br>` +
+                                        `para <b>${serverData.company_name}</b>`;
                     mNotice.style.display = 'block';
                 }
 
