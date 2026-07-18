@@ -8,6 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>Realizar Pedido</title>
     <link rel="stylesheet" href="style.css?v=1.5">
+	<div id="manager-notice" style="display: none;"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -107,6 +108,14 @@
                     });
                 }
                 if (serverData.texts.footer) document.getElementById('app-footer').innerText = serverData.texts.footer;
+
+                // Отображение баннера менеджера
+                if (serverData.manager_name) {
+                    const mNotice = document.getElementById('manager-notice');
+                    const opName = currentType === 'stock' ? 'inventario' : 'pedido';
+                    mNotice.innerHTML = `✍️ <b>Modo Representante</b><br>${serverData.manager_name} tramitando ${opName} para <b>${serverData.texts.header.split(' ').pop()}</b>`;
+                    mNotice.style.display = 'block';
+                }
 
                 // Логика блокировки или отображения формы
                 if (serverData.is_fixed) {
