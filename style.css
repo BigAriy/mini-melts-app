@@ -6,16 +6,19 @@
     --font-size-qty: 20px;
     --header-color: #333333;
     --btn-color-plus-minus: #3390ec;
+    /* Переменные для динамических цветов */
+    --app-bg-color: transparent;
+    --main-text-color: inherit;
 }
 
 body {
     font-family: sans-serif;
-    background-color: var(--tg-theme-bg-color);
-    color: var(--tg-theme-text-color);
+    background-color: var(--app-bg-color);
+    color: var(--main-text-color);
     margin: 0 auto;
     max-width: 600px;
     padding: 20px 25px 80px 25px;
-    
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .header-wrapper {
@@ -102,6 +105,7 @@ body {
 .item span {
     font-size: var(--font-size-title);
     flex: 1;
+    color: var(--main-text-color);
 }
 
 .controls {
@@ -129,8 +133,7 @@ body {
     border: 1px solid rgba(128, 128, 128, 0.3);
     border-radius: 4px;
     background: none;
-    color: inherit;
-
+    color: var(--main-text-color);
 }
 
 /* Убираем стандартные стрелки у полей ввода типа number */
