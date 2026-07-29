@@ -80,9 +80,7 @@
                 const currentDark = manualThemeOverride !== null ? manualThemeOverride : autoDark;
                 manualThemeOverride = !currentDark;
                 applyTheme();
-                if (tg.showAlert) {
-                    tg.showAlert(`Modo: ${manualThemeOverride ? 'OSCURO (Dark)' : 'CLARO (Light)'}`);
-                }
+
             } catch (err) {
                 alert("Theme Error: " + err.message);
             }
