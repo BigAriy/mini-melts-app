@@ -103,7 +103,7 @@
 
                 const textColor = isDark 
                 ? (serverData.text_color_dark && serverData.text_color_dark.trim() !== "" ? serverData.text_color_dark : '#ffffff')
-                : serverData.text_color;
+                : (serverData.text_color && serverData.text_color.trim() !== "" ? serverData.text_color : '#333333');
 
             const iconColor = isDark
                 ? (serverData.icon_color_dark && serverData.icon_color_dark.trim() !== "" ? serverData.icon_color_dark : textColor)
