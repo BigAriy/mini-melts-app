@@ -123,10 +123,14 @@
                     document.body.style.backgroundColor = bgColor;
                 }
                 if (textColor) {
-                    document.documentElement.style.setProperty('--main-text-color', textColor);
-                    document.body.style.setProperty('--main-text-color', textColor);
-                    document.body.style.color = textColor;
-                }
+                document.documentElement.style.setProperty('--main-text-color', textColor);
+                document.documentElement.style.setProperty('--tg-theme-text-color', textColor);
+                document.documentElement.style.setProperty('--header-color', textColor);
+                document.body.style.setProperty('--main-text-color', textColor);
+                document.body.style.setProperty('--tg-theme-text-color', textColor);
+                document.body.style.setProperty('--header-color', textColor);
+                document.body.style.color = textColor;
+            }
             } catch (e) {
                 console.error("applyTheme error:", e);
             }
