@@ -53,19 +53,30 @@
 		
 		function applyTheme() {
             if (!serverData) return;
-            const isDark = tg.colorScheme === 'dark';
+
+            const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const tgDark = tg.colorScheme === 'dark';
+            const isDark = tgDark || (tg.colorScheme !== 'light' && systemDark);
+
             const bgColor = isDark ? (serverData.bg_color_dark || serverData.bg_color) : serverData.bg_color;
             const textColor = isDark ? (serverData.text_color_dark || serverData.text_color) : serverData.text_color;
 
             if (bgColor) {
                 document.documentElement.style.setProperty('--app-bg-color', bgColor);
+                document.body.style.setProperty('--app-bg-color', bgColor);
+                document.body.style.backgroundColor = bgColor;
             }
             if (textColor) {
                 document.documentElement.style.setProperty('--main-text-color', textColor);
+                document.body.style.setProperty('--main-text-color', textColor);
+                document.body.style.color = textColor;
             }
         }
 
         tg.onEvent('themeChanged', applyTheme);
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+        }
 
         async function loadGoods() {
             const controller = new AbortController();
