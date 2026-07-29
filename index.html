@@ -69,18 +69,46 @@
         let currentAction = urlParams.get('mode') || 'new';
 		let currentType = urlParams.get('type') || 'order'; 
         let order = {};
-
-		let manualThemeOverride = null;
 		
-		function applyTheme() {
-            if (!serverData) return;
+		let manualThemeOverride = null;
 
+        function toggleThemeManual() {
             const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
             const tgDark = tg.colorScheme === 'dark';
-            const isDark = tgDark || (tg.colorScheme !== 'light' && systemDark);
+            const autoDark = tgDark || systemDark;
+            const currentDark = manualThemeOverride !== null ? manualThemeOverride : autoDark;
+            manualThemeOverride = !currentDark;
+            applyTheme();
+        }
 
-            const bgColor = isDark ? (serverData.bg_color_dark || serverData.bg_color) : serverData.bg_color;
-            const textColor = isDark ? (serverData.text_color_dark || serverData.text_color) : serverData.text_color;
+        function applyTheme() {
+            const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const tgDark = tg.colorScheme === 'dark';
+            const autoDark = tgDark || systemDark;
+            const isDark = manualThemeOverride !== null ? manualThemeOverride : autoDark;
+
+            const sunIcon = document.getElementById('theme-icon-sun');
+            const moonIcon = document.getElementById('theme-icon-moon');
+            if (sunIcon && moonIcon) {
+                if (isDark) {
+                    sunIcon.style.display = 'none';
+                    moonIcon.style.display = 'inline-block';
+                } else {
+                    sunIcon.style.display = 'inline-block';
+                    moonIcon.style.display = 'none';
+                }
+            }
+
+            if (!serverData) return;
+
+            const darkBgFallback = currentType === 'stock' ? '#121213' : '#1c1c1d';
+            const bgColor = isDark 
+                ? (serverData.bg_color_dark && serverData.bg_color_dark.trim() !== "" ? serverData.bg_color_dark : darkBgFallback)
+                : serverData.bg_color;
+
+            const textColor = isDark 
+                ? (serverData.text_color_dark && serverData.text_color_dark.trim() !== "" ? serverData.text_color_dark : '#ffffff')
+                : serverData.text_color;
 
             if (bgColor) {
                 document.documentElement.style.setProperty('--app-bg-color', bgColor);
