@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Realizar Pedido</title>
-    <link rel="stylesheet" href="style.css?v=1.5">
+    <link rel="stylesheet" href="style.css?v=1.6">
 	<div id="manager-notice" style="display: none;"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -50,6 +50,22 @@
         let currentAction = urlParams.get('mode') || 'new';
 		let currentType = urlParams.get('type') || 'order'; 
         let order = {};
+		
+		function applyTheme() {
+            if (!serverData) return;
+            const isDark = tg.colorScheme === 'dark';
+            const bgColor = isDark ? (serverData.bg_color_dark || serverData.bg_color) : serverData.bg_color;
+            const textColor = isDark ? (serverData.text_color_dark || serverData.text_color) : serverData.text_color;
+
+            if (bgColor) {
+                document.documentElement.style.setProperty('--app-bg-color', bgColor);
+            }
+            if (textColor) {
+                document.documentElement.style.setProperty('--main-text-color', textColor);
+            }
+        }
+
+        tg.onEvent('themeChanged', applyTheme);
 
         async function loadGoods() {
             const controller = new AbortController();
@@ -66,12 +82,8 @@
 				                
                 clearTimeout(timeoutId);
                 serverData = await response.json();
-				// Применяем цвет фона из настроек
 				
-				
-				if (serverData.bg_color) {
-                    document.body.style.backgroundColor = serverData.bg_color;
-                }
+				applyTheme();
                 
                 // Применяем цвет главной кнопки
                 if (serverData.confirm_btn_color) {
