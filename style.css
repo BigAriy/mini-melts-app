@@ -101,6 +101,7 @@ body {
 .item span {
     font-size: var(--font-size-title);
     flex: 1;
+    color: inherit; /* Гарантируем наследование от body */
 }
 
 .controls {
