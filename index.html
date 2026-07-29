@@ -69,6 +69,8 @@
         let currentAction = urlParams.get('mode') || 'new';
 		let currentType = urlParams.get('type') || 'order'; 
         let order = {};
+
+		let manualThemeOverride = null;
 		
 		function applyTheme() {
             if (!serverData) return;
