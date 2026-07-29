@@ -15,8 +15,9 @@ body {
     margin: 0 auto;
     max-width: 600px;
     padding: 20px 25px 80px 25px;
-    transition: background-color 0.3s, color 0.3s;
+    
 }
+
 .header-wrapper {
     display: flex;
     align-items: center;
@@ -101,7 +102,6 @@ body {
 .item span {
     font-size: var(--font-size-title);
     flex: 1;
-    color: inherit; /* Гарантируем наследование от body */
 }
 
 .controls {
