@@ -73,52 +73,64 @@
 		let manualThemeOverride = null;
 
         function toggleThemeManual() {
-            const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const tgDark = tg.colorScheme === 'dark';
-            const autoDark = tgDark || systemDark;
-            const currentDark = manualThemeOverride !== null ? manualThemeOverride : autoDark;
-            manualThemeOverride = !currentDark;
-            applyTheme();
+            try {
+                const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const tgDark = tg.colorScheme === 'dark';
+                const autoDark = tgDark || systemDark;
+                const currentDark = manualThemeOverride !== null ? manualThemeOverride : autoDark;
+                manualThemeOverride = !currentDark;
+                applyTheme();
+                if (tg.showAlert) {
+                    tg.showAlert(`Modo: ${manualThemeOverride ? 'OSCURO (Dark)' : 'CLARO (Light)'}`);
+                }
+            } catch (err) {
+                alert("Theme Error: " + err.message);
+            }
         }
+        window.toggleThemeManual = toggleThemeManual;
 
         function applyTheme() {
-            const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const tgDark = tg.colorScheme === 'dark';
-            const autoDark = tgDark || systemDark;
-            const isDark = manualThemeOverride !== null ? manualThemeOverride : autoDark;
+            try {
+                const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const tgDark = tg.colorScheme === 'dark';
+                const autoDark = tgDark || systemDark;
+                const isDark = manualThemeOverride !== null ? manualThemeOverride : autoDark;
 
-            const sunIcon = document.getElementById('theme-icon-sun');
-            const moonIcon = document.getElementById('theme-icon-moon');
-            if (sunIcon && moonIcon) {
-                if (isDark) {
-                    sunIcon.style.display = 'none';
-                    moonIcon.style.display = 'inline-block';
-                } else {
-                    sunIcon.style.display = 'inline-block';
-                    moonIcon.style.display = 'none';
+                const sunIcon = document.getElementById('theme-icon-sun');
+                const moonIcon = document.getElementById('theme-icon-moon');
+                if (sunIcon && moonIcon) {
+                    if (isDark) {
+                        sunIcon.style.display = 'none';
+                        moonIcon.style.display = 'inline-block';
+                    } else {
+                        sunIcon.style.display = 'inline-block';
+                        moonIcon.style.display = 'none';
+                    }
                 }
-            }
 
-            if (!serverData) return;
+                if (!serverData) return;
 
-            const darkBgFallback = currentType === 'stock' ? '#121213' : '#1c1c1d';
-            const bgColor = isDark 
-                ? (serverData.bg_color_dark && serverData.bg_color_dark.trim() !== "" ? serverData.bg_color_dark : darkBgFallback)
-                : serverData.bg_color;
+                const darkBgFallback = currentType === 'stock' ? '#121213' : '#1c1c1d';
+                const bgColor = isDark 
+                    ? (serverData.bg_color_dark && serverData.bg_color_dark.trim() !== "" ? serverData.bg_color_dark : darkBgFallback)
+                    : serverData.bg_color;
 
-            const textColor = isDark 
-                ? (serverData.text_color_dark && serverData.text_color_dark.trim() !== "" ? serverData.text_color_dark : '#ffffff')
-                : serverData.text_color;
+                const textColor = isDark 
+                    ? (serverData.text_color_dark && serverData.text_color_dark.trim() !== "" ? serverData.text_color_dark : '#ffffff')
+                    : serverData.text_color;
 
-            if (bgColor) {
-                document.documentElement.style.setProperty('--app-bg-color', bgColor);
-                document.body.style.setProperty('--app-bg-color', bgColor);
-                document.body.style.backgroundColor = bgColor;
-            }
-            if (textColor) {
-                document.documentElement.style.setProperty('--main-text-color', textColor);
-                document.body.style.setProperty('--main-text-color', textColor);
-                document.body.style.color = textColor;
+                if (bgColor) {
+                    document.documentElement.style.setProperty('--app-bg-color', bgColor);
+                    document.body.style.setProperty('--app-bg-color', bgColor);
+                    document.body.style.backgroundColor = bgColor;
+                }
+                if (textColor) {
+                    document.documentElement.style.setProperty('--main-text-color', textColor);
+                    document.body.style.setProperty('--main-text-color', textColor);
+                    document.body.style.color = textColor;
+                }
+            } catch (e) {
+                console.error("applyTheme error:", e);
             }
         }
 
@@ -127,6 +139,16 @@
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
         }
 
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeBtn = document.getElementById('theme-toggle-btn');
+            if (themeBtn) {
+                themeBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    toggleThemeManual();
+                });
+            }
+        });
+		
         async function loadGoods() {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 15000);
