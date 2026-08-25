@@ -266,13 +266,23 @@
             document.getElementById('send-btn').style.display = (hasItems || currentAction === 'update') ? 'block' : 'none';
         }
 
+        function getMaxQty() {
+            if (!serverData || !serverData.qty_regex) return 999;
+            const match = serverData.qty_regex.match(/\{[0-9]+,([0-9]+)\}/);
+            if (match && match[1]) {
+                const digits = parseInt(match[1]);
+                return Math.pow(10, digits) - 1;
+            }
+            return 999;
+        }
+
         function change(id, delta) {
             let input = document.getElementById(`qty-${id}`);
             let val = (parseInt(input.value) || 0) + delta;
             
-            // Ограничения
+            let maxQty = getMaxQty();
             if (val < 0) val = 0;
-            if (val > 99) val = 99; 
+            if (val > maxQty) val = maxQty; 
             
             input.value = val;
             updateManual(id, val);
@@ -282,12 +292,11 @@
             let input = document.getElementById(`qty-${id}`);
             let cleanValue = value.toString().replace(/[^0-9]/g, ''); // Удаляем всё, кроме цифр
             
-            // Проверка регулярным выражением из настроек
-            let regex = new RegExp(serverData.qty_regex || "^[0-9]{1,2}$");
+            let maxQty = getMaxQty();
+            let regex = new RegExp(serverData.qty_regex || "^[0-9]{1,3}$");
             
             if (cleanValue !== "" && !regex.test(cleanValue)) {
-                // Если ввели например 100, а разрешено 2 знака - обрезаем до 99
-                cleanValue = 99;
+                cleanValue = maxQty;
             }
 
             let val = parseInt(cleanValue) || 0;
