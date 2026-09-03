@@ -348,8 +348,29 @@
             // 2. Активная проверка связи с сервером (Пинг)
             btn.innerText = "...";
             try {
+                const phoneParam = urlParams.get('phone');
+                if (phoneParam) {
+                    const resp = await fetch('/api/order/submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            phone: phoneParam,
+                            items: order,
+                            action: currentAction,
+                            type: currentType
+                        })
+                    });
+                    if (resp.ok) {
+                        alert("¡Pedido enviado con éxito!");
+                    } else {
+                        alert("Error al enviar el pedido.");
+                    }
+                    updateOnlineStatus();
+                    return;
+                }
+
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3000); // Таймаут 3 сек
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
                 const ping = await fetch('https://melts.sigmaboy.us/health-check', { signal: controller.signal });
                 clearTimeout(timeoutId);
                 
@@ -364,8 +385,12 @@
                     throw new Error();
                 }
             } catch (e) {
-                tg.showAlert("El servidor no responde. Por favor, inténtelo de nuevo en un minuto.");
-                updateOnlineStatus(); // Возвращаем текст кнопки
+                if (tg.showAlert) {
+                    tg.showAlert("El servidor no responde. Por favor, inténtelo de nuevo en un minuto.");
+                } else {
+                    alert("El servidor no responde. Por favor, inténtelo de nuevo en un minuto.");
+                }
+                updateOnlineStatus();
             }
         }
 
