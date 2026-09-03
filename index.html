@@ -156,8 +156,8 @@
                 let userId = urlParams.get('tg_id') || (tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '');
                 let phone = urlParams.get('phone') || '';
                 
-                // Передаем tg_id, mode и type бэкенду
-                const response = await fetch(`https://melts.sigmaboy.us/api/goods?tg_id=${userId}&phone=${phone}&mode=${currentAction}&type=${currentType}&v=${Date.now()}`, {
+                // Передаем tg_id, phone, mode и type бэкенду
+                const response = await fetch(`https://melts.sigmaboy.us/api/goods?tg_id=${userId}&phone=${phone}&mode=${currentAction}&type=${currentType}&v=${Date.now()}`, { 
                     signal: controller.signal 
                 });
 				                
