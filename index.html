@@ -155,7 +155,8 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 let userId = urlParams.get('tg_id') || (tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : '');
                 let phone = urlParams.get('phone') || '';
-                const apiUrl = `https://melts.sigmaboy.us/api/goods?tg_id=${userId}&phone=${phone}&mode=${currentAction}&type=${currentType}&v=${Date.now()}`;
+                let token = urlParams.get('token') || '';
+                const apiUrl = `https://melts.sigmaboy.us/api/goods?tg_id=${userId}&phone=${phone}&token=${token}&mode=${currentAction}&type=${currentType}&v=${Date.now()}`;
                 console.log("[DEBUG FRONTEND] window.location.search:", window.location.search);
                 console.log("[DEBUG FRONTEND] fetch URL:", apiUrl);
                 
