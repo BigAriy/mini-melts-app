@@ -354,12 +354,14 @@
             btn.innerText = "...";
             try {
                 const phoneParam = urlParams.get('phone');
+                const tokenParam = urlParams.get('token') || '';
                 if (phoneParam) {
-                    const resp = await fetch('/api/order/submit', {
+                    const resp = await fetch('https://melts.sigmaboy.us/api/order/submit', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             phone: phoneParam,
+                            token: tokenParam,
                             items: order,
                             action: currentAction,
                             type: currentType
