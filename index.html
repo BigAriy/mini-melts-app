@@ -356,7 +356,7 @@
                 const phoneParam = urlParams.get('phone');
                 const tokenParam = urlParams.get('token') || '';
                 if (phoneParam) {
-                    const resp = await fetch('https://melts.sigmaboy.us/api/order/submit', {
+                    const resp = await fetch('/api/order/submit', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -368,11 +368,42 @@
                         })
                     });
                     if (resp.ok) {
-                        alert("¡Pedido enviado con éxito!");
+                        order = {};
+                        document.getElementById('goods-list').style.display = 'none';
+                        document.getElementById('send-btn').style.display = 'none';
+                        document.getElementById('help-container').style.display = 'none';
+                        document.getElementById('app-subheader').style.display = 'none';
+                        
+                        const isStock = currentType === 'stock';
+                        const successTitle = isStock ? '📋 ¡Stock registrado con éxito!' : '✅ ¡Pedido enviado con éxito!';
+                        const successMsg = isStock 
+                            ? 'La información de existencias ha sido recibida y enviada a su gestor.'
+                            : 'Su pedido ha sido recibido con éxito. Puede ver los detalles en su chat de WhatsApp.';
+
+                        const notice = document.getElementById('fixed-notice');
+                        notice.innerHTML = `
+                            <div style="padding: 10px 0;">
+                                <div style="font-size: 22px; font-weight: bold; margin-bottom: 12px;">${successTitle}</div>
+                                <div style="font-size: 15px; opacity: 0.9; margin-bottom: 22px; line-height: 1.4;">${successMsg}</div>
+                                <a href="whatsapp://" style="display: inline-block; padding: 14px 28px; background-color: #25D366; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 16px;">⬅️ Volver a WhatsApp</a>
+                            </div>
+                        `;
+                        notice.style.display = 'block';
+                        notice.style.border = '2px solid #25D366';
+                        notice.style.backgroundColor = 'rgba(37, 211, 102, 0.12)';
+
+                        setTimeout(() => {
+                            window.location.href = "whatsapp://";
+                            try { window.close(); } catch (_) {}
+                        }, 300);
                     } else {
-                        alert("Error al enviar el pedido.");
+                        const errData = await resp.json().catch(() => ({}));
+                        const errMsg = errData.error || "Error al enviar el pedido. Por favor, inténtelo de nuevo.";
+                        const notice = document.getElementById('fixed-notice');
+                        notice.innerText = errMsg;
+                        notice.style.display = 'block';
+                        btn.innerText = serverData && serverData.texts ? serverData.texts.confirm_btn : "CONFIRMAR";
                     }
-                    updateOnlineStatus();
                     return;
                 }
 
