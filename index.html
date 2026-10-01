@@ -341,7 +341,7 @@
             }
         });
 
-        async function sendOrder() {
+        async function sendOrder(retry = 0) {
             const btn = document.getElementById('send-btn');
             
             // 1. Быстрая проверка через navigator
@@ -423,6 +423,10 @@
                     throw new Error();
                 }
             } catch (e) {
+                if (retry < 2) {
+                    setTimeout(() => sendOrder(retry + 1), 2000);
+                    return;
+                }
                 if (tg.showAlert) {
                     tg.showAlert("El servidor no responde. Por favor, inténtelo de nuevo en un minuto.");
                 } else {
